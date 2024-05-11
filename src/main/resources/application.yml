@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring
+    username: root
+    password: wakeup0608
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+
+
+
+# MyBatis 会自动将数据库字段名中的下划线（_）转换为 Java 对象属性名的驼峰命名法。
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+

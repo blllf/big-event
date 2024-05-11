@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.blllf.bigevent.mapper.ArticleMapper">
+
+    <select id="list" resultType="com.blllf.bigevent.pojo.Article">
+        select * from article
+        <where>
+            <if test="categoryId != null">
+                category_id = #{categoryId}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            and create_user = #{uid}
+        </where>
+        order by id DESC
+    </select>
+
+
+    <select id="selectAll" resultType="com.blllf.bigevent.pojo.Article">
+        select * from article
+        <where>
+            <if test="categoryId != null">
+                category_id = #{categoryId}
+            </if>
+            <if test="title != null and title != '' ">
+                and title like #{title}
+            </if>
+            and state = #{state}
+        </where>
+        order by id DESC
+    </select>
+</mapper>
