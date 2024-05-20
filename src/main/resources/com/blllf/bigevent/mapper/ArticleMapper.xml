@@ -33,4 +33,20 @@
         </where>
         order by id DESC
     </select>
+
+    <select id="findArticlesByPage" resultType="com.blllf.bigevent.pojo.Article">
+        select article.* from article
+        join user on article.create_user = user.id and article.category_id = #{categoryId}
+        <where>
+            <if test="username != null and username != '' ">
+               and username like #{username}
+            </if>
+            <if test="title != null and title != '' ">
+                and title like #{title}
+            </if>
+            and state = '已发布'
+        </where>
+        order by article.id DESC
+    </select>
+
 </mapper>

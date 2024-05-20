@@ -1,7 +1,7 @@
 package com.blllf.bigevent.exception;
 
 import com.blllf.bigevent.pojo.Result;
-import org.apache.catalina.util.StringUtil;
+
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

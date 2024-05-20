@@ -17,4 +17,7 @@ public interface CategoryService {
     void update(Category category);
 
     void delete(Integer id);
+
+
+    List<Category> select5Category();
 }

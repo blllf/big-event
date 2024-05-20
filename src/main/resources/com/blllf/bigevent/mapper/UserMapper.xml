@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.blllf.bigevent.mapper.UserMapper">
+
+
+    <select id="findAllUsersByAdmin" resultType="com.blllf.bigevent.pojo.User">
+        select * from user
+        <where>
+            <if test="username != null and username != '' ">
+                username like #{username}
+            </if>
+            <if test="email != null and email != '' ">
+                and email like #{email}
+            </if>
+            <if test="nickname != null and nickname != '' ">
+               and nickname like #{nickname}
+            </if>
+        </where>
+    </select>
+</mapper>

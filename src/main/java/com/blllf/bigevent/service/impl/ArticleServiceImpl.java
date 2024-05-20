@@ -70,9 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Article selectArtById(Integer id) {
-
         Article article = articleMapper.selectArtById(id);
-
         return article;
     }
 
@@ -84,7 +82,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void deleteById(Integer id) {
-        articleMapper.deleteById(id);
+        articleMapper.deleteById("create_user", id);
 
         //还要删除掉收藏中的数据
         articleMapper.deleteArticleById(id);

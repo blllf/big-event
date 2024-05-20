@@ -26,7 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         //登录接口和注册接口放行
         //把拦截器注册进去
-        registry.addInterceptor(loginInterceptor).excludePathPatterns("/user/login","/user/register","/user/sendEmail" ,"/user/findPwd");
+        registry.addInterceptor(loginInterceptor).excludePathPatterns("/user/login","/user/register","/user/sendEmail" ,"/user/findPwd" ,"/article/findArticlesByPage");
 
     }
 }

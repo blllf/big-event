@@ -1,6 +1,11 @@
 package com.blllf.bigevent.controller;
 
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.support.ExcelTypeEnum;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.blllf.bigevent.mapper.UserMapper;
+import com.blllf.bigevent.pojo.PageBean;
 import com.blllf.bigevent.pojo.Result;
 import com.blllf.bigevent.pojo.User;
 import com.blllf.bigevent.service.UserService;
@@ -24,6 +29,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +51,8 @@ public class UserController {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private UserMapper userMapper;
 
 
     @PostMapping("/register")
@@ -83,7 +93,34 @@ public class UserController {
 
         //System.out.println(flag);
 
-        if (Md5Util.getMD5String(password).equals(loginUser.getPassword())){
+        /*if (Md5Util.getMD5String(password).equals(loginUser.getPassword())){
+            //登录成功
+            HashMap<String, Object> claims = new HashMap<>();
+            claims.put("id" , loginUser.getId());
+            claims.put("username" , loginUser.getUsername());
+            String token = JwtUtil.genToken(claims);
+            //把token 存到redis中
+            ValueOperations<String, String> operations = stringRedisTemplate.opsForValue();
+            operations.set(token,token,12, TimeUnit.HOURS);
+            return Result.success(token);
+        }*/
+
+        //修改一下 开发阶段不需要对密码进行加密
+        if (loginUser.getPassword().length() > 30 ){
+            if (Md5Util.getMD5String(password).equals(loginUser.getPassword())){
+                //登录成功
+                HashMap<String, Object> claims = new HashMap<>();
+                claims.put("id" , loginUser.getId());
+                claims.put("username" , loginUser.getUsername());
+                String token = JwtUtil.genToken(claims);
+                //把token 存到redis中
+                ValueOperations<String, String> operations = stringRedisTemplate.opsForValue();
+                operations.set(token,token,12, TimeUnit.HOURS);
+                return Result.success(token);
+            }
+        }
+
+        if (password.equals(loginUser.getPassword())){
             //登录成功
             HashMap<String, Object> claims = new HashMap<>();
             claims.put("id" , loginUser.getId());
@@ -194,8 +231,6 @@ public class UserController {
 
         return Result.error("不存在该邮箱");
 
-
-
     }
 
     /*
@@ -227,4 +262,80 @@ public class UserController {
 
         return Result.success();
     }
+
+    //查找单个用户
+    @GetMapping("/getOne")
+    public Result<User> findOne(Integer id){
+        User user = userMapper.selectById(id);
+        return Result.success(user);
+    }
+
+    // 管理员行为
+    //查询数据库中所有用户的值
+   // @GetMapping("/getEveryOne")
+    /*public Result<List<User>> selectAllPeople(){
+        Map<String,Object> map = ThreadLocalUtil.get();
+        Integer uid = (Integer) map.get("id");
+        if (uid == 1){
+            List<User> users = userMapper.selectList(null);
+            return Result.success(users);
+        }
+        return Result.error("该用户不是管理员");
+    }*/
+    @GetMapping("/getEveryOne")
+    //查询改进
+    public Result<PageBean<User>> selectUsersAdmin(Integer pageNum , Integer pageSize ,
+                                                   @RequestParam(required = false) String username,
+                                                   @RequestParam(required = false) String email,
+                                                   @RequestParam(required = false) String nickname){
+
+        PageBean<User> users = userService.selectAllByAdmin(pageNum, pageSize, username, email, nickname);
+
+        return Result.success(users);
+    }
+
+
+
+    //删除用户
+    @DeleteMapping("/deleteUser")
+    public Result deleteUser(Integer id){
+        boolean flag = userService.deleteUser(id);
+        return flag ? Result.success() : Result.error("删除失败");
+    }
+
+    //管理员 修改用户信息 用户名：保持唯一不修改 邮箱不能重复
+    //通过用户Id值修改
+    @PostMapping("/updateUserAdmin")
+    public Result updateUser(@RequestBody User user){
+        System.out.println("user：" + user);
+        Boolean flag = userService.updateUserByAdmin(user);
+        return flag?Result.success():Result.error("邮箱已存在");
+    }
+
+    //添加用户
+    @PostMapping("/addUserAdmin")
+    public Result addUser(@RequestBody  User user){
+        //1. 查询该用户名（账号）在数据库是否唯一
+        Map<String, Object> map1 = new HashMap<>();
+        //Map<String, Object> map2 = new HashMap<>();
+        map1.put("username", user.getUsername());
+        map1.put("email",user.getEmail());
+        List<User> users = userMapper.selectByMap(map1);
+        //List<User> user2 = userMapper.selectByMap(map2);
+        if (users == null){
+            return Result.error("该用户名或邮箱已存在");
+        }else {
+            userMapper.addUserAdmin(user);
+        }
+        return Result.success("添加成功");
+    }
+
+
+
+
+
+
+
+
+
 }

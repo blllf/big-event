@@ -1,10 +1,12 @@
 package com.blllf.bigevent.controller;
 
 
+import com.blllf.bigevent.mapper.CategoryMapper;
 import com.blllf.bigevent.pojo.Category;
 import com.blllf.bigevent.pojo.Result;
 import com.blllf.bigevent.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,9 @@ public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
 
     @PostMapping
@@ -56,6 +61,25 @@ public class CategoryController {
     public Result delete(Integer id){
         categoryService.delete(id);
         return Result.success();
+    }
+
+    @GetMapping("/select5")
+    public Result<List<Category>> select5(){
+        List<Category> list = categoryService.select5Category();
+
+        return Result.success(list);
+    }
+
+    @GetMapping("/selectCateByArtId")
+    public Result<Category> selectCategoryByArticleId(Integer id){
+        Category category = categoryMapper.selectCategoryByArticleId(id);
+        return Result.success(category);
+    }
+
+    @GetMapping("/findCategoryName")
+    public Result<Category> findCategoryNameById(Integer id){
+        Category category = categoryMapper.selectById(id);
+        return Result.success(category);
     }
 
 }

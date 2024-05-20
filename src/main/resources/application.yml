@@ -13,8 +13,17 @@ spring:
 
 
 # MyBatis 会自动将数据库字段名中的下划线（_）转换为 Java 对象属性名的驼峰命名法。
-mybatis:
+# mybatis:
+#  configuration:
+#    map-underscore-to-camel-case: true
+
+mybatis-plus:
   configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-value: 1
+      logic-not-delete-value: 0
 
 

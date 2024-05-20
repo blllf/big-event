@@ -1,7 +1,9 @@
 package com.blllf.bigevent.mapper;
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.blllf.bigevent.pojo.User;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -10,7 +12,7 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends BaseMapper<User> {
 
     @Select("select * from user")
     List<User> selectAll();
@@ -43,4 +45,14 @@ public interface UserMapper {
     @Update("update user set password = #{password} , update_time = now() where email = #{email}")
     void findPasswordByEmail(String password , String email);
 
+    //管理员操作修改
+    @Update("update user set nickname = #{nickname} , email = #{email} , update_time = #{updateTime} , password = #{password} where id = #{id}")
+    void updateUserAdmin(User user);
+
+    @Insert("insert into user(username , nickname, email , password, create_time, update_time) VALUES " +
+            "(#{username} ,#{nickname} , #{email} , #{password} , now() , now())")
+    void addUserAdmin(User user);
+
+
+    Page<User> findAllUsersByAdmin(String username, String email, String nickname);
 }
